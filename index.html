@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COMIC REVIEW</title>
+  <style>
+    :root {
+      --ink: #191816;
+      --paper: #fff4dc;
+      --panel: #ffffff;
+      --muted: #6f6a60;
+      --line: #dfd5c5;
+      --red: #ef5b50;
+      --cyan: #28a7b8;
+      --yellow: #d99016;
+      --green: #5da271;
+      --shadow: 0 18px 50px rgba(25, 24, 22, 0.11);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      background:
+        linear-gradient(90deg, rgba(25, 24, 22, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(25, 24, 22, 0.032) 1px, transparent 1px),
+        var(--paper);
+      background-size: 28px 28px;
+    }
+
+    input,
+    select {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 44px;
+    }
+
+    .topbar {
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      max-width: 900px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--red);
+      font-size: clamp(34px, 5vw, 64px);
+      font-weight: 950;
+      line-height: 0.98;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      text-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .subtitle {
+      max-width: 650px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+      font-weight: 700;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 160px 180px;
+      gap: 12px;
+      margin-bottom: 22px;
+      padding: 14px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    input,
+    select {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border: 2px solid var(--ink);
+      border-radius: 6px;
+      background: #fffefa;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(40, 167, 184, 0.18);
+    }
+
+    .comic-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 36px 30px;
+      align-items: start;
+      padding: 8px 0 36px;
+    }
+
+    .comic-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 132px minmax(0, 1fr);
+      gap: 18px;
+      min-height: 226px;
+      padding: 16px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 10px 12px 0 rgba(25, 24, 22, 0.86);
+      transform: rotate(-1.2deg);
+      transform-origin: center;
+    }
+
+    .comic-card::after {
+      position: absolute;
+      top: 12px;
+      left: 18px;
+      right: 18px;
+      height: 1px;
+      background: rgba(25, 24, 22, 0.12);
+      content: "";
+    }
+
+    .comic-card:nth-child(2n) {
+      margin-top: 34px;
+      transform: rotate(1.1deg);
+    }
+
+    .comic-card:nth-child(3n) {
+      grid-template-columns: 148px minmax(0, 1fr);
+      transform: rotate(-0.7deg);
+    }
+
+    .comic-card:nth-child(4n) {
+      margin-top: 18px;
+      transform: rotate(0.85deg);
+    }
+
+    .comic-card:nth-child(5n) {
+      margin-top: 8px;
+      margin-left: 12px;
+      transform: rotate(-1.45deg);
+    }
+
+    .cover {
+      position: relative;
+      min-height: 190px;
+      overflow: hidden;
+      border: 2px solid var(--ink);
+      border-radius: 6px;
+      background: var(--cover-color);
+      background-position: center;
+      background-size: cover;
+    }
+
+    .cover.is-placeholder::before {
+      position: absolute;
+      inset: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.82);
+      content: "";
+    }
+
+    .cover.is-placeholder::after {
+      position: absolute;
+      right: -23px;
+      bottom: 18px;
+      width: 92px;
+      height: 92px;
+      border: 15px solid rgba(25, 24, 22, 0.18);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .cover-title {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.12;
+      text-shadow: 2px 2px 0 rgba(25, 24, 22, 0.7);
+      word-break: break-word;
+    }
+
+    .comic-body {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .comic-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .comic-head h2 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .rating-pill {
+      flex: 0 0 auto;
+      min-width: 0;
+      color: var(--yellow);
+      font-size: 16px;
+      font-weight: 900;
+      text-align: center;
+      text-shadow: 1px 1px 0 rgba(25, 24, 22, 0.38);
+      white-space: nowrap;
+    }
+
+    .score-block {
+      display: grid;
+      flex: 0 0 auto;
+      gap: 3px;
+      justify-items: end;
+      padding-top: 3px;
+    }
+
+    .star-rating {
+      color: var(--yellow);
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1;
+      text-shadow: 1px 1px 0 rgba(25, 24, 22, 0.38);
+      white-space: nowrap;
+    }
+
+    .meta {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .review {
+      margin: 0 0 15px;
+      color: #35312b;
+      font-size: 15px;
+      line-height: 1.68;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 4px 8px;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      background: #fff6d9;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .empty {
+      display: none;
+      padding: 32px;
+      border: 2px dashed var(--ink);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--muted);
+      text-align: center;
+      font-weight: 800;
+    }
+
+    @media (max-width: 820px) {
+      .controls,
+      .comic-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .comic-card {
+        grid-template-columns: 120px minmax(0, 1fr);
+        min-height: 210px;
+        width: 97%;
+        margin-top: 0;
+        transform: rotate(-1.15deg);
+      }
+
+      .comic-card:nth-child(2n),
+      .comic-card:nth-child(3n),
+      .comic-card:nth-child(4n),
+      .comic-card:nth-child(5n) {
+        grid-template-columns: 120px minmax(0, 1fr);
+      }
+
+      .comic-card:nth-child(2n) {
+        justify-self: end;
+        margin-top: 24px;
+        transform: rotate(1.15deg);
+      }
+
+      .comic-card:nth-child(3n) {
+        justify-self: start;
+        width: 94%;
+        margin-top: 28px;
+        transform: rotate(-0.8deg);
+      }
+
+      .comic-card:nth-child(4n) {
+        justify-self: end;
+        width: 96%;
+        margin-top: 24px;
+        transform: rotate(0.9deg);
+      }
+
+      .comic-card:nth-child(5n) {
+        margin-left: 18px;
+        transform: rotate(-1.35deg);
+      }
+
+      .cover {
+        min-height: 178px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .shell {
+        width: min(100% - 22px, 1180px);
+        padding-top: 22px;
+      }
+
+      h1 {
+        font-size: clamp(34px, 12vw, 56px);
+        text-shadow: 2px 2px 0 var(--ink);
+      }
+
+      .comic-card {
+        grid-template-columns: 1fr;
+        width: 100%;
+      }
+
+      .comic-card:nth-child(2n),
+      .comic-card:nth-child(3n),
+      .comic-card:nth-child(4n),
+      .comic-card:nth-child(5n) {
+        grid-template-columns: 1fr;
+        width: 100%;
+        margin-left: 0;
+      }
+
+      .cover {
+        min-height: 260px;
+      }
+
+      .comic-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .rating-pill {
+        width: max-content;
+        padding-top: 0;
+      }
+
+      .score-block {
+        justify-items: start;
+        padding-top: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <section class="brand" aria-labelledby="page-title">
+        <h1 id="page-title">COMIC REVIEW</h1>
+        <p class="subtitle">个人漫画评价展示页。封面、分数和评价内容都在页面底部的漫画数据中维护，之后可以直接通过代码继续添加。</p>
+      </section>
+    </header>
+
+    <section class="controls" aria-label="筛选漫画评价">
+      <div class="field">
+        <label for="searchInput">搜索漫画</label>
+        <input id="searchInput" type="search" placeholder="输入标题、作者或标签">
+      </div>
+      <div class="field">
+        <label for="genreFilter">类型</label>
+        <select id="genreFilter">
+          <option value="all">全部类型</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sortSelect">排序</label>
+        <select id="sortSelect">
+          <option value="score-desc">评分从高到低</option>
+          <option value="score-asc">评分从低到高</option>
+          <option value="title-asc">标题 A-Z</option>
+        </select>
+      </div>
+    </section>
+
+    <section id="comicGrid" class="comic-grid" aria-label="漫画评价列表"></section>
+    <div id="emptyState" class="empty">没有找到匹配的漫画评价。</div>
+  </main>
+
+  <script>
+    // 后续添加漫画时，只需要在这里追加对象。cover 可填写本地图片路径或网络图片 URL。
+    const comics = [
+      {
+        title: "星轨少年",
+        author: "林川",
+        genre: "冒险",
+        score: 8.8,
+        cover: "",
+        review: "节奏明快，分镜像电影镜头一样有冲击力，主角团的成长线很稳。",
+        tags: ["热血", "友情", "世界观"],
+        color: "#ef5b50"
+      },
+      {
+        title: "午后三点的便利店",
+        author: "青禾",
+        genre: "治愈",
+        score: 8.4,
+        cover: "",
+        review: "小人物故事写得温柔又克制，每一话都像刚泡好的热茶。",
+        tags: ["日常", "温柔", "短篇"],
+        color: "#5da271"
+      },
+      {
+        title: "镜城谜案",
+        author: "白石",
+        genre: "悬疑",
+        score: 9.1,
+        cover: "",
+        review: "伏笔回收漂亮，反转不靠生硬设定，读到后半段很难停下来。",
+        tags: ["推理", "反转", "都市"],
+        color: "#28a7b8"
+      },
+      {
+        title: "银河甜品师",
+        author: "南星",
+        genre: "奇幻",
+        score: 8.1,
+        cover: "",
+        review: "把料理、魔法和旅行结合得很轻盈，画面想象力非常可爱。",
+        tags: ["美食", "魔法", "旅行"],
+        color: "#f3b536"
+      },
+      {
+        title: "第七节课后",
+        author: "川岛遥",
+        genre: "校园",
+        score: 7.8,
+        cover: "",
+        review: "青春气息很足，人物表情细腻，适合想看慢热关系的人。",
+        tags: ["青春", "成长", "慢热"],
+        color: "#8a70d6"
+      },
+      {
+        title: "机甲花园",
+        author: "陆明",
+        genre: "科幻",
+        score: 8.7,
+        cover: "",
+        review: "硬科幻外壳下有很柔软的情感核心，机设和战斗场景都够爽。",
+        tags: ["机甲", "战争", "羁绊"],
+        color: "#35312b"
+      }
+    ];
+
+    const grid = document.querySelector("#comicGrid");
+    const emptyState = document.querySelector("#emptyState");
+    const searchInput = document.querySelector("#searchInput");
+    const genreFilter = document.querySelector("#genreFilter");
+    const sortSelect = document.querySelector("#sortSelect");
+
+    function formatScore(score) {
+      return `${Number(score).toFixed(1)}/10.0`;
+    }
+
+    function formatStars(score) {
+      const filled = Math.max(0, Math.min(5, Math.round(Number(score) / 2)));
+      return "★★★★★".slice(0, filled) + "☆☆☆☆☆".slice(0, 5 - filled);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function getCoverMarkup(comic) {
+      const title = escapeHtml(comic.title);
+      const color = escapeHtml(comic.color || "#ef5b50");
+
+      if (comic.cover) {
+        const cover = escapeHtml(comic.cover);
+        return `<div class="cover" style="--cover-color: ${color}; background-image: url('${cover}')" role="img" aria-label="${title} 封面"></div>`;
+      }
+
+      return `
+        <div class="cover is-placeholder" style="--cover-color: ${color}" role="img" aria-label="${title} 封面占位">
+          <div class="cover-title">${title}</div>
+        </div>
+      `;
+    }
+
+    function renderCards() {
+      const query = searchInput.value.trim().toLowerCase();
+      const genre = genreFilter.value;
+
+      let visible = comics.filter((comic) => {
+        const haystack = [comic.title, comic.author, comic.genre, comic.tags.join(" ")].join(" ").toLowerCase();
+        return (genre === "all" || comic.genre === genre) && haystack.includes(query);
+      });
+
+      visible.sort((a, b) => {
+        if (sortSelect.value === "score-asc") return a.score - b.score;
+        if (sortSelect.value === "title-asc") return a.title.localeCompare(b.title, "zh-CN");
+        return b.score - a.score;
+      });
+
+      grid.innerHTML = visible.map((comic) => `
+        <article class="comic-card">
+          ${getCoverMarkup(comic)}
+          <div class="comic-body">
+            <div>
+              <div class="comic-head">
+                <h2>${escapeHtml(comic.title)}</h2>
+                <div class="score-block" aria-label="${formatScore(comic.score)}，${formatStars(comic.score)}">
+                  <div class="rating-pill">${formatScore(comic.score)}</div>
+                  <div class="star-rating" aria-hidden="true">${formatStars(comic.score)}</div>
+                </div>
+              </div>
+              <p class="meta">${escapeHtml(comic.author)} / ${escapeHtml(comic.genre)}</p>
+              <p class="review">${escapeHtml(comic.review)}</p>
+            </div>
+            <div class="tags">${comic.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
+          </div>
+        </article>
+      `).join("");
+
+      emptyState.style.display = visible.length ? "none" : "block";
+    }
+
+    function renderFilters() {
+      const genres = [...new Set(comics.map((comic) => comic.genre))];
+      genreFilter.innerHTML = `<option value="all">全部类型</option>` + genres.map((genre) => `<option value="${escapeHtml(genre)}">${escapeHtml(genre)}</option>`).join("");
+    }
+
+    [searchInput, genreFilter, sortSelect].forEach((control) => {
+      control.addEventListener("input", renderCards);
+      control.addEventListener("change", renderCards);
+    });
+
+    renderFilters();
+    renderCards();
+  </script>
+</body>
+</html>

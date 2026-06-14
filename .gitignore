@@ -1,0 +1,29 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor and IDE metadata
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Dependency and build output folders, in case this static page later grows into an app
+node_modules/
+dist/
+build/
+.cache/
+coverage/
+
+# Local environment files
+.env
+.env.*
+!.env.example
