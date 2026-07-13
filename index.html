@@ -524,13 +524,13 @@
     // 后续添加漫画时，只需要在这里追加对象。cover 可填写本地图片路径或网络图片 URL。
     const comics = [
       {
-        title: "星轨少年",
-        author: "林川",
-        genre: "冒险",
-        score: 8.8,
-        cover: "",
-        review: "节奏明快，分镜像电影镜头一样有冲击力，主角团的成长线很稳。",
-        tags: ["热血", "友情", "世界观"],
+        title: "无职转生",
+        author: "理不尽",
+        genre: "",
+        score: 9.7,
+        cover: "pictures/wzzs.jpg",
+        review: "异世界最高的山，转生流唯一GOAT",
+        tags: ["异世界"],
         color: "#ef5b50"
       },
       {
@@ -653,7 +653,7 @@
                   <div class="star-rating" aria-hidden="true">${formatStars(comic.score)}</div>
                 </div>
               </div>
-              <p class="meta">${escapeHtml(comic.author)} / ${escapeHtml(comic.genre)}</p>
+              <p class="meta">${escapeHtml(comic.author)}</p>
               <p class="review">${escapeHtml(comic.review)}</p>
             </div>
             <div class="tags">${comic.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
