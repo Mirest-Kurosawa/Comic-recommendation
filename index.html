@@ -226,13 +226,21 @@
 
     .cover {
       position: relative;
+      align-self: start;
+      width: 100%;
+      aspect-ratio: 2 / 3;
       min-height: 190px;
       overflow: hidden;
       border: 2px solid var(--ink);
       border-radius: 6px;
       background: var(--cover-color);
       background-position: center;
-      background-size: cover;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .cover:not(.is-placeholder) {
+      background-color: #f7f6f2;
     }
 
     .cover.is-placeholder::before {
@@ -325,10 +333,20 @@
 
     .review {
       margin: 0 0 15px;
+      height: 126px;
+      overflow-y: auto;
+      overflow-wrap: anywhere;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line) transparent;
       color: #35312b;
       font-size: 15px;
       line-height: 1.68;
       white-space:pre-line;
+    }
+
+    .review:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
     }
 
     .tags {
@@ -464,6 +482,8 @@
       }
 
       .cover {
+        height: 300px;
+        aspect-ratio: auto;
         min-height: 260px;
       }
 
@@ -930,7 +950,7 @@
                 </div>
               </div>
               <p class="meta">${escapeHtml(comic.author)}</p>
-              <p class="review">${escapeHtml(comic.review)}</p>
+              <p class="review" tabindex="0" role="region" aria-label="${escapeHtml(comic.title)}的评价">${escapeHtml(comic.review)}</p>
             </div>
             <div class="tags">${comic.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
           </div>
