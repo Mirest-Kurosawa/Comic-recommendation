@@ -116,6 +116,10 @@
     }
 
     .tag-filter {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
       width: 100%;
       min-height: 38px;
       padding: 8px 10px;
@@ -129,6 +133,19 @@
       text-align: left;
       cursor: pointer;
       transition: transform 0.16s ease, background 0.16s ease, color 0.16s ease;
+    }
+
+    .tag-filter-label {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .tag-count {
+      flex: 0 0 auto;
+      font-size: 12px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      opacity: 0.7;
     }
 
     .tag-filter:hover {
@@ -1070,8 +1087,9 @@
       const tags = ["all", ...new Set(comics.flatMap((comic) => comic.tags))];
       tagList.innerHTML = tags.map((tag) => {
         const label = tag === "all" ? "全部" : tag;
+        const count = tag === "all" ? comics.length : comics.filter((comic) => comic.tags.includes(tag)).length;
         const activeClass = tag === activeTag ? " is-active" : "";
-        return `<button class="tag-filter${activeClass}" type="button" data-tag="${escapeHtml(tag)}">${escapeHtml(label)}</button>`;
+        return `<button class="tag-filter${activeClass}" type="button" data-tag="${escapeHtml(tag)}" aria-label="${escapeHtml(label)}，${count}部作品"><span class="tag-filter-label">${escapeHtml(label)}</span><span class="tag-count" aria-hidden="true">${count}</span></button>`;
       }).join("");
     }
 
