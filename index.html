@@ -368,7 +368,6 @@
 
     .comic-footer {
       position: relative;
-      container-type: inline-size;
       display: flex;
       align-items: flex-end;
       gap: 6px;
@@ -381,22 +380,15 @@
 
     .review-sticker {
       position: absolute;
-      right: 0;
-      bottom: 0;
+      top: -18px;
+      left: -4px;
+      z-index: 2;
       display: block;
-      flex: 0 0 28px;
-      width: 28px;
-      height: 23px;
-      margin-left: auto;
+      width: 96px;
+      height: 78px;
       object-fit: contain;
-    }
-
-    @container (max-width: 170px) {
-      .review-sticker {
-        width: 16px;
-        height: 13px;
-        bottom: -14px;
-      }
+      transform: rotate(-8deg);
+      pointer-events: none;
     }
 
     .tags {
@@ -595,7 +587,7 @@
   <script>
     // 后续添加漫画时，只需要在这里追加对象。cover 可填写本地图片路径或网络图片 URL。
     const comics = [
-      // Optional sticker: "pictures/review-delicious.jpg" adds a bottom-right image.
+      // Optional sticker: "pictures/review-delicious.jpg" adds a top-left image.
       {
         title: "无职转生",
         author: "Studio Bind / 理不尽",
@@ -2008,6 +2000,7 @@
 
       grid.innerHTML = visible.map((comic) => `
         <article class="comic-card">
+          ${comic.sticker ? `<img class="review-sticker" src="${escapeHtml(comic.sticker)}" alt="评价表情包" width="96" height="78" loading="lazy">` : ""}
           ${getCoverMarkup(comic)}
           <div class="comic-body">
             <div>
@@ -2023,7 +2016,6 @@
             </div>
             <div class="comic-footer">
               <div class="tags">${comic.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
-              ${comic.sticker ? `<img class="review-sticker" src="${escapeHtml(comic.sticker)}" alt="评价表情包" width="86" height="70" loading="lazy">` : ""}
             </div>
           </div>
         </article>
