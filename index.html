@@ -366,6 +366,27 @@
       outline-offset: 3px;
     }
 
+    .comic-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .comic-footer .tags {
+      flex: 1 1 100px;
+      min-width: 0;
+    }
+
+    .review-sticker {
+      display: block;
+      flex: 0 0 86px;
+      width: 86px;
+      height: 70px;
+      margin-left: auto;
+      object-fit: contain;
+    }
+
     .tags {
       display: flex;
       flex-wrap: wrap;
@@ -560,6 +581,7 @@
   <script>
     // 后续添加漫画时，只需要在这里追加对象。cover 可填写本地图片路径或网络图片 URL。
     const comics = [
+      // Optional sticker: "pictures/review-delicious.jpg" adds a bottom-right image.
       {
         title: "无职转生",
         author: "Studio Bind / 理不尽",
@@ -1984,7 +2006,10 @@
               <p class="meta">${escapeHtml(comic.author)}</p>
               <p class="review" tabindex="0" role="region" aria-label="${escapeHtml(comic.title)}的评价">${escapeHtml(comic.review)}</p>
             </div>
-            <div class="tags">${comic.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
+            <div class="comic-footer">
+              <div class="tags">${comic.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
+              ${comic.sticker ? `<img class="review-sticker" src="${escapeHtml(comic.sticker)}" alt="评价表情包" width="86" height="70" loading="lazy">` : ""}
+            </div>
           </div>
         </article>
       `).join("");
