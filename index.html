@@ -367,33 +367,47 @@
     }
 
     .comic-footer {
+      position: relative;
+      container-type: inline-size;
       display: flex;
-      flex-wrap: wrap;
       align-items: flex-end;
-      gap: 10px;
+      gap: 6px;
     }
 
     .comic-footer .tags {
-      flex: 1 1 100px;
+      flex: 1 1 auto;
       min-width: 0;
     }
 
     .review-sticker {
+      position: absolute;
+      right: 0;
+      bottom: 0;
       display: block;
-      flex: 0 0 86px;
-      width: 86px;
-      height: 70px;
+      flex: 0 0 28px;
+      width: 28px;
+      height: 23px;
       margin-left: auto;
       object-fit: contain;
+    }
+
+    @container (max-width: 170px) {
+      .review-sticker {
+        width: 16px;
+        height: 13px;
+        bottom: -14px;
+      }
     }
 
     .tags {
       display: flex;
       flex-wrap: wrap;
+      align-items: flex-start;
       gap: 6px;
     }
 
     .tag {
+      flex-shrink: 0;
       padding: 4px 8px;
       border: 1px solid var(--ink);
       border-radius: 999px;
