@@ -73,6 +73,46 @@
       font-weight: 700;
     }
 
+    .format-switch {
+      display: flex;
+      gap: 0;
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 0 24px;
+      border: 2px solid var(--ink);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--panel);
+      box-shadow: 5px 5px 0 rgba(25, 24, 22, 0.86);
+    }
+
+    .format-option {
+      min-width: 112px;
+      min-height: 42px;
+      padding: 8px 18px;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .format-option + .format-option {
+      border-left: 2px solid var(--ink);
+    }
+
+    .format-option.is-active {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .format-option:focus-visible {
+      outline: 3px solid var(--cyan);
+      outline-offset: -4px;
+    }
+
     .controls {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 180px;
@@ -569,6 +609,11 @@
       </section>
     </header>
 
+    <nav class="format-switch" aria-label="作品类别">
+      <button class="format-option is-active" type="button" data-format="tv" aria-pressed="true">TV</button>
+      <button class="format-option" type="button" data-format="movie" aria-pressed="false">剧场版</button>
+    </nav>
+
     <section class="content-layout">
       <aside class="tag-sidebar" aria-label="标签筛选">
         <div class="tag-sidebar-title">标签</div>
@@ -591,13 +636,13 @@
         </section>
 
         <section id="comicGrid" class="comic-grid" aria-label="漫画评价列表"></section>
-        <div id="emptyState" class="empty">没有找到匹配的漫画评价。</div>
+        <div id="emptyState" class="empty">没有找到匹配的作品。</div>
       </div>
     </section>
   </main>
 
   <script>
-    // 后续添加漫画时，只需要在这里追加对象。cover 可填写本地图片路径或网络图片 URL。
+    // 后续添加作品时，在这里追加对象。format: "movie" 为剧场版，省略时为 TV；cover 可填写本地图片路径或网络图片 URL。
     const comics = [
       // Optional sticker: "pictures/review-delicious.jpg" adds a bottom-right image.
       {
@@ -1976,7 +2021,13 @@
     const searchInput = document.querySelector("#searchInput");
     const sortSelect = document.querySelector("#sortSelect");
     const tagList = document.querySelector("#tagList");
+    const formatSwitch = document.querySelector(".format-switch");
+    let activeFormat = "tv";
     let activeTag = "all";
+
+    function comicsInActiveFormat() {
+      return comics.filter((comic) => (comic.format || "tv") === activeFormat);
+    }
 
     function formatScore(score) {
       return `${Number(score).toFixed(1)}/10.0`;
@@ -2015,7 +2066,7 @@
     function renderCards() {
       const query = searchInput.value.trim().toLowerCase();
 
-      let visible = comics.filter((comic) => {
+      let visible = comicsInActiveFormat().filter((comic) => {
         const haystack = [comic.title, comic.author, comic.tags.join(" ")].join(" ").toLowerCase();
         const matchesTag = activeTag === "all" || comic.tags.includes(activeTag);
         return matchesTag && haystack.includes(query);
@@ -2050,18 +2101,37 @@
         </article>
       `).join("");
 
+      emptyState.textContent = activeFormat === "movie" && !comicsInActiveFormat().length
+        ? "还没有剧场版评价。"
+        : "没有找到匹配的作品。";
       emptyState.style.display = visible.length ? "none" : "block";
     }
 
     function renderTagSidebar() {
-      const tags = ["all", ...new Set(comics.flatMap((comic) => comic.tags))];
+      const currentComics = comicsInActiveFormat();
+      const tags = ["all", ...new Set(currentComics.flatMap((comic) => comic.tags))];
       tagList.innerHTML = tags.map((tag) => {
         const label = tag === "all" ? "全部" : tag;
-        const count = tag === "all" ? comics.length : comics.filter((comic) => comic.tags.includes(tag)).length;
+        const count = tag === "all" ? currentComics.length : currentComics.filter((comic) => comic.tags.includes(tag)).length;
         const activeClass = tag === activeTag ? " is-active" : "";
         return `<button class="tag-filter${activeClass}" type="button" data-tag="${escapeHtml(tag)}" aria-label="${escapeHtml(label)}，${count}部作品"><span class="tag-filter-label">${escapeHtml(label)}</span><span class="tag-count" aria-hidden="true">${count}</span></button>`;
       }).join("");
     }
+
+    formatSwitch.addEventListener("click", (event) => {
+      const button = event.target.closest(".format-option");
+      if (!button || button.dataset.format === activeFormat) return;
+
+      activeFormat = button.dataset.format;
+      activeTag = "all";
+      formatSwitch.querySelectorAll(".format-option").forEach((option) => {
+        const selected = option === button;
+        option.classList.toggle("is-active", selected);
+        option.setAttribute("aria-pressed", String(selected));
+      });
+      renderTagSidebar();
+      renderCards();
+    });
 
     tagList.addEventListener("click", (event) => {
       const button = event.target.closest(".tag-filter");
